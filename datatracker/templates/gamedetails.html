@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1 style="text-align: center">{% block title %} {{ game_title }} {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h3>{{game_title}}</h3>
+{% for game in game_list %}
+<h4>{{game.platform}}</h4>
+<p> Year Release: {{game.year}} Global Sales: {{game.globalSales}} Genre: {{game.genre}}  </p>
+{% endfor %}
+
+<h1>Sales by Platform</h1>
+<!-- bar chart canvas element -->
+<canvas id="myChart" width="600" height="400"></canvas>
+<p id="caption">The chart is displaying a simple line chart.</p>
+<script>
+      // Global parameters:
+      // do not resize the chart canvas when its container does (keep at 600x400px)
+      Chart.defaults.global.responsive = false;
+
+      // define the chart data
+      var chartData = {
+        labels : [{% for game in game_list %}
+                   "{{game.platform}}",
+                  {% endfor %}],
+        datasets : [{
+            label: '{{ legend }}',
+            fill: true,
+            lineTension: 0.1,
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: "rgba(75,192,192,1)",
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data : [{% for game in game_list %}
+                      {{game.globalSales}},
+                    {% endfor %}],
+            spanGaps: false
+        }]
+      }
+
+      // get chart canvas
+      var ctx = document.getElementById("myChart").getContext("2d");
+
+      // create the chart using the chart canvas
+      var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: chartData,
+      });
+    </script>
+
+
+{% endblock %}

@@ -6,8 +6,8 @@
 
 {% block content %}
 
-{% for game in search_results %}
-<p> Name: {{game}}  <input type="submit" name="details_button" value="{{game}}"></p>
+{% for game in unique_games %}
+<p> Name: {{game}}</p>
 {% endfor %}
 
 {% endblock %}

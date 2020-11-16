@@ -1,18 +1,14 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1 style="text-align: center">{% block title %} Welcome to GamerHub {% endblock %}</h1>
+<h1 style="text-align: center">{% block title %} Welcome to GamerStatHub {% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<p>GamerHub is a Resrouce for Video Game Statistics.  Currently we have COUNT games in our database.</p>
-{% for game in games%}
-<p> Name: {{game.name}} Year: {{game.year}} Global Sales: {{game.globalSales}} Platform: {{game.platform}} </p>
-{% endfor %}
+<p>GamerStatHub is a Resource for Video Game Statistics.  Currently we have COUNT games in our database.</p>
   <form method="post">
     <label for="title">Enter a Game Title</label>
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
     <input type="submit" value="Submit">
   </form>
-
 {% endblock %}

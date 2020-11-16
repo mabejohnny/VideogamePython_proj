@@ -13,18 +13,46 @@ from datatracker.Models.platform import Platform
 
 from datatracker.Models.publisher import Publisher
 
+from datatracker.Models.game_collection import Game_Collection
+
 bp = Blueprint('modules.videogames', __name__)
 
 
 # @bp.route('/postform)
 # def post_search_by_game_title():
 
+@bp.route('/gamedetails', methods=('GET', 'POST'))
+def gamedetails():
+    game_title = "Grand Theft Auto V"
+    response = requests.get('https://api.dccresource.com/api/games')
+    games = json.loads(response.content, object_hook=Game.game_decoder)
+    legend = 'Sales by Platform'
+    game_list = []
+
+    for game in games:
+        if game.name == game_title:
+            game_list.append(game)
+
+    return render_template('gamedetails.html', game_list=game_list, game_title=game_title, legend=legend)
+
+
+@bp.route('/games', methods=('GET', 'POST'))
+def games():
+    response = requests.get('https://api.dccresource.com/api/games')
+    allgames = json.loads(response.content, object_hook=lambda d: SimpleNamespace(**d))
+    unique_games = []
+
+    for game in allgames:
+        if game.name not in unique_games:
+            unique_games.append(game.name)
+
+    return render_template('games.html', allgames=allgames, unique_games=unique_games)
 
 @bp.route('/', methods=('GET', 'POST'))
 def index():
     response = requests.get('https://api.dccresource.com/api/games')
-    games = json.loads(response.content, object_hook=Game.game_decoder)
-    #games = json.loads(response.content, object_hook=lambda d: SimpleNamespace(**d))
+    games = json.loads(response.content, object_hook=lambda d: SimpleNamespace(**d))
+    unique_games = []
     search_results = []
 
     if request.method == 'POST':
@@ -35,10 +63,14 @@ def index():
             error = 'You must enter a title'
 
         for game in games:
-            if request.form['title'] in game.name:
+            if game.name not in unique_games:
+                unique_games.append(game.name)
+
+        for game in unique_games:
+            if request.form['title'] in game:
                 search_results.append(game)
 
-        return render_template('searchresults.html', games=games, search_results=search_results)
+        return render_template('searchresults.html', games=games, search_results=search_results, unique_games=unique_games)
 
 
     return render_template('index.html', games=games, search_results=search_results)
@@ -66,7 +98,6 @@ def platform():
         for game in games:
             if game.platform == platform.name:
                 platform.games.append(game)
-
 
     return render_template('platform.html', games=games)
 
@@ -197,8 +228,6 @@ def publishers():
                     platforms.append(game.platform)
             for platform in platforms:
                 publisher.platforms.append(Platform.platform_decoder(platform))
-
-
 
     for publisher in collection_of_publishers:
         for game in publisher.games:
