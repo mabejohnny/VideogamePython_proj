@@ -1,5 +1,6 @@
 import collections
 import json
+from random import random
 
 import requests
 
@@ -13,7 +14,6 @@ from datatracker.Models.platform import Platform
 
 from datatracker.Models.publisher import Publisher
 
-from datatracker.Models.game_collection import Game_Collection
 
 bp = Blueprint('modules.videogames', __name__)
 
@@ -23,17 +23,20 @@ bp = Blueprint('modules.videogames', __name__)
 
 @bp.route('/gamedetails', methods=('GET', 'POST'))
 def gamedetails():
-    game_title = "Grand Theft Auto V"
-    response = requests.get('https://api.dccresource.com/api/games')
-    games = json.loads(response.content, object_hook=Game.game_decoder)
-    legend = 'Sales by Platform'
-    game_list = []
+    if request.method == 'POST':
+        game_title = request.form['details_button']
+        error = None
 
-    for game in games:
-        if game.name == game_title:
-            game_list.append(game)
+        response = requests.get('https://api.dccresource.com/api/games')
+        games = json.loads(response.content, object_hook=Game.game_decoder)
+        legend = 'Sales by Platform'
+        game_list = []
 
-    return render_template('gamedetails.html', game_list=game_list, game_title=game_title, legend=legend)
+        for game in games:
+            if game.name == game_title:
+                game_list.append(game)
+
+        return render_template('gamedetails.html', game_list=game_list, game_title=game_title, legend=legend)
 
 
 @bp.route('/games', methods=('GET', 'POST'))
@@ -81,6 +84,7 @@ def platform():
     games = json.loads(response.content, object_hook=Game.game_decoder)
     platform_names = []
     platforms = []
+    colors = []
 
     #Creates a list of all platforms
     for game in games:
@@ -99,7 +103,33 @@ def platform():
             if game.platform == platform.name:
                 platform.games.append(game)
 
-    return render_template('platform.html', games=games)
+    for platform in platforms:
+        for game in platform.games:
+            if game.year is not None and game.year <= 1989:
+                platform.sales85_89 += game.globalSales
+                platform.totalSales += game.globalSales
+            elif game.year is not None and game.year > 1989 and game.year <= 1994:
+                platform.sales90_94 += game.globalSales
+                platform.totalSales += game.globalSales
+            elif game.year is not None and game.year > 1994 and game.year <= 1999:
+                platform.sales95_99 += game.globalSales
+                platform.totalSales += game.globalSales
+            elif game.year is not None and game.year > 1999 and game.year <= 2004:
+                platform.sales00_04 += game.globalSales
+                platform.totalSales += game.globalSales
+            elif game.year is not None and game.year > 2004 and game.year <= 2009:
+                platform.sales05_09 += game.globalSales
+                platform.totalSales += game.globalSales
+            elif game.year is not None and game.year > 2009 and game.year <= 2014:
+                platform.sales10_14 += game.globalSales
+                platform.totalSales += game.globalSales
+            elif game.year is not None and game.year > 2014 and game.year <= 2019:
+                platform.sales15_19 += game.globalSales
+                platform.totalSales += game.globalSales
+            elif game.year is None:
+                platform.totalSales += game.globalSales
+
+    return render_template('platforms.html', platforms=platforms, colors=colors)
 
 @bp.route('/sales', methods=['GET'])
 def sales():

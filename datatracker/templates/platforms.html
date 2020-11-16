@@ -1,18 +1,66 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1 style="text-align: center">{% block title %} Publisher Data {% endblock %}</h1>
+<h1 style="text-align: center">{% block title %} Search Results {% endblock %}</h1>
 {% endblock %}
 
-<h2>Publisher Object Data</h2>
-{% for publisher in collection_of_publishers %}
-<p> Name: {{publisher.name}} {% for game in publisher.games %} {{game.name}}</p>
-{% endfor %}
-{% endfor %}
-<h3>Publishers and their Platforms</h3>
-{% for publisher in collection_of_publishers %}
-<p> Name: {{publisher.name}}: {% for platform in publisher.platforms %} {{platform.name}}</p>
-{% endfor %}
-{% endfor %}
+{% block content %}
+
+<h1>Sales Trends of Platforms over Time</h1>
+<!-- bar chart canvas element -->
+<canvas id="myChart" width="600" height="400"></canvas>
+<p id="caption">The chart is displaying a simple line chart.</p>
+<script>
+function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++ ) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            console.log(color)
+            return color;
+                }
+      // Global parameters:
+      // do not resize the chart canvas when its container does (keep at 600x400px)
+      Chart.defaults.global.responsive = false;
+
+      // define the chart data
+      var chartData = {
+        labels : ['1985-1989', '1990-1994', '1995-1999', '2000-2004', '2005-2009', '2010-2014', '2015-2019'],
+        datasets : [{% for platform in platforms %}{
+            label: '{{ platform.name }}',
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: getRandomColor(),
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data : [{{platform.sales85_89}}, {{platform.sales90_94}}, {{platform.sales95_99}}, {{platform.sales00_04}},
+            {{platform.sales05_09}}, {{platform.sales10_14}}, {{platform.sales15_19}}],
+            spanGaps: false
+        }, {% endfor %}]
+      }
+
+      // get chart canvas
+      var ctx = document.getElementById("myChart").getContext("2d");
+
+      // create the chart using the chart canvas
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+      });
+    </script>
+
 
 {% endblock %}
