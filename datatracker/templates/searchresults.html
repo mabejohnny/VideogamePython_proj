@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1 style="text-align: center">{% block title %} Search Results {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+{% for game in search_results %}
+<p> Name: {{game.name}}:</p>
+{% endfor %}
+
+{% endblock %}

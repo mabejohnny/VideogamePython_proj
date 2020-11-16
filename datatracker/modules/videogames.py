@@ -20,12 +20,28 @@ bp = Blueprint('modules.videogames', __name__)
 # def post_search_by_game_title():
 
 
-@bp.route('/home', methods=['GET'])
+@bp.route('/', methods=('GET', 'POST'))
 def index():
     response = requests.get('https://api.dccresource.com/api/games')
     games = json.loads(response.content, object_hook=Game.game_decoder)
     #games = json.loads(response.content, object_hook=lambda d: SimpleNamespace(**d))
-    return render_template('index.html', games=games)
+    search_results = []
+
+    if request.method == 'POST':
+        page_title = request.form['title']
+        error = None
+
+        if not page_title:
+            error = 'You must enter a title'
+
+        for game in games:
+            if request.form['title'] in game.name:
+                search_results.append(game)
+
+        return render_template('searchresults.html', games=games, search_results=search_results)
+
+
+    return render_template('index.html', games=games, search_results=search_results)
 
 @bp.route('/home', methods=['GET'])
 def platform():

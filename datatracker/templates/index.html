@@ -5,8 +5,9 @@
 {% endblock %}
 
 {% block content %}
+<p>GamerHub is a Resrouce for Video Game Statistics.  Currently we have COUNT games in our database.</p>
 {% for game in games%}
-<p> Name: {{game.name}} Year: {{game.name}} Global Sales: {{game.name}} </p>
+<p> Name: {{game.name}} Year: {{game.year}} Global Sales: {{game.globalSales}} Platform: {{game.platform}} </p>
 {% endfor %}
   <form method="post">
     <label for="title">Enter a Game Title</label>
