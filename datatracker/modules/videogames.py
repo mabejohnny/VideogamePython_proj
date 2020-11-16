@@ -23,8 +23,7 @@ bp = Blueprint('modules.videogames', __name__)
 @bp.route('/home', methods=['GET'])
 def index():
     response = requests.get('https://api.dccresource.com/api/games')
-    games_dict = json.loads(response)
-    games = Game.game_decoder(games_dict)
+    games = json.loads(response.content, object_hook=Game.game_decoder)
     #games = json.loads(response.content, object_hook=lambda d: SimpleNamespace(**d))
     return render_template('index.html', games=games)
 
