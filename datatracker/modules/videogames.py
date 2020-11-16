@@ -27,6 +27,33 @@ def index():
     #games = json.loads(response.content, object_hook=lambda d: SimpleNamespace(**d))
     return render_template('index.html', games=games)
 
+@bp.route('/home', methods=['GET'])
+def platform():
+    response = requests.get('https://api.dccresource.com/api/games')
+    games = json.loads(response.content, object_hook=Game.game_decoder)
+    platform_names = []
+    platforms = []
+
+    #Creates a list of all platforms
+    for game in games:
+        if game.platform in platform_names:
+            continue
+        else:
+            platform_names.append(game.platform)
+
+    #Creates a Collection of Platform Objects
+    for platform in platform_names:
+        new_system = Platform.platform_decoder(platform)
+        platforms.append(new_system)
+
+    for platform in platforms:
+        for game in games:
+            if game.platform == platform.name:
+                platform.games.append(game)
+
+
+    return render_template('platform.html', games=games)
+
 @bp.route('/sales', methods=['GET'])
 def sales():
     response = requests.get('https://api.dccresource.com/api/games')
