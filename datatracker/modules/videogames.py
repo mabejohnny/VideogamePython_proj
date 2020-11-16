@@ -217,22 +217,7 @@ def publishers():
     games = json.loads(response.content, object_hook=Game.game_decoder)
     publishers = []
     platforms = []
-    collection_of_platforms = []
     collection_of_publishers = []
-
-    #Creates a list of all platforms
-    for game in games:
-        if game.platform in platforms:
-            continue
-        else:
-            platforms.append(game.platform)
-
-
-    #Creates a Collection of Platform Objects
-    for system in platforms:
-        new_system = Platform.platform_decoder(system)
-        collection_of_platforms.append(new_system)
-
 
     #Create a list of Unique Publishers
     for game in games:
@@ -241,29 +226,74 @@ def publishers():
         else:
             publishers.append(game.publisher)
 
+    #Creates a list of all platforms
+    for game in games:
+        if game.platform in platforms:
+            continue
+        else:
+            platforms.append(game.platform)
+
     #Creates a collection of Publisher Objects
     for publisher in publishers:
         publisher = Publisher.publisher_decoder(publisher)
         collection_of_publishers.append(publisher)
 
-    #Populates the games list for each publisher in collection_of_publishers
     for publisher in collection_of_publishers:
+        for platform in platforms:
+            platform = Platform.platform_decoder(platform)
+            publisher.platforms.append(platform)
+
+    for publisher in collection_of_publishers:
+        for platform in publisher.platforms:
+            for game in games:
+                if game.platform == platform.name and game.publisher == publisher.name:
+                    platform.totalSales += game.globalSales
+
+    return render_template('publishers.html', collection_of_publishers=collection_of_publishers)
+
+@bp.route('/bonus', methods=['GET'])
+def bonus():
+    response = requests.get('https://api.dccresource.com/api/games')
+    games = json.loads(response.content, object_hook=Game.game_decoder)
+    publishers = []
+    platforms = []
+    collection_of_platforms = []
+
+    #Create a list of Unique Publishers
+    for game in games:
+        if game.publisher in publishers:
+            continue
+        else:
+            publishers.append(game.publisher)
+
+    #Creates a list of all platforms
+    for game in games:
+        if game.platform in platforms:
+            continue
+        else:
+            platforms.append(game.platform)
+
+    #Creates a collection of Platform Objects
+    for platform in platforms:
+        platform = Platform.platform_decoder(platform)
+        collection_of_platforms.append(platform)
+
+    for platform in collection_of_platforms:
         for game in games:
-            if game.publisher == publisher.name:
-                publisher.games.append(game)
-                platforms = []
-                if game.platform in platforms:
-                    continue
-                else:
-                    platforms.append(game.platform)
-            for platform in platforms:
-                publisher.platforms.append(Platform.platform_decoder(platform))
+            if game.platform == platform.name:
+                platform.games.append(game)
 
-    for publisher in collection_of_publishers:
-        for game in publisher.games:
-            for platform in publisher.platforms:
-                if game.publisher == publisher.name and game.platform == platform.name:
-                    platform.sales += game.globalSales
+    for platform in collection_of_platforms:
+        for publisher in publishers:
+            for game in platform.games:
+                if game.publisher == publisher:
+                    new = Publisher.publisher_decoder(game.publisher)
+                    platform.publishers.append(new)
 
+    for platform in collection_of_platforms:
+        for game in platform.games:
+            for publisher in platform.publishers:
+                if game.publisher == publisher.name:
+                    publisher.sales += game.globalSales
 
-    return render_template('publishers.html', games=games, collection_of_publishers=collection_of_publishers)
+    return render_template('bonus.html', collection_of_platforms=collection_of_platforms)

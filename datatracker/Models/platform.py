@@ -10,6 +10,7 @@ class Platform:
         self.sales05_09 = 0
         self.sales10_14 = 0
         self.sales15_19 = 0
+        self.publishers = []
 
     @staticmethod
     def platform_decoder(name):

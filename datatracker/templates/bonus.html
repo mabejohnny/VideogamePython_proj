@@ -7,9 +7,10 @@
 {% block content %}
 
 <h3>Publishers and their Platforms</h3>
-{% for publisher in collection_of_publishers %}
-<p> Publisher: {{publisher.name}}:</p>
-<p>{% for platform in publisher.platforms %} {{platform.name}} Sales: {{platform.totalSales}}</p>
+{% for platform in collection_of_platforms %}
+<p> Platform: {{platform.name}}:</p>
+{% for publisher in platform.publishers %}
+<p> Publisher: {{publisher.name}} Sales: {{publisher.sales}}</p>
 {% endfor %}
 {% endfor %}
 
