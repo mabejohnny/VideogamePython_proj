@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1 style="text-align: center">{% block title %} Publisher Data {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<h3>Publishers and their Platforms</h3>
+{% for publisher in collection_of_publishers %}
+<p> Name: {{publisher.name}}:</p>
+<p>{% for platform in publisher.platforms %} {{platform.name}} Sales: {{platform.sales}}</p>
+{% endfor %}
+{% endfor %}
+
+{% endblock %}

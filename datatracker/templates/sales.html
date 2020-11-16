@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1 style="text-align: center">{% block title %} Video Game Data {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% for game in results %}
+<p> Name: {{game.name}} Year: {{game.year}} Global Sales: {{game.globalSales}} Platform: {{game.platform}} </p>
+{% endfor %}
+
+{% for game in platforms %}
+<p> Name: {{game}}</p>
+{% endfor %}
+
+{% for platform in collection_of_platforms %}
+<p> Name: {{platform.name}} {{platform.sales}}</p>
+{% endfor %}
+
+<h2>Null Year Data</h2>
+{% for game in null_year %}
+<p> Name: {{game.name}} {{game.platform}} Year: {{game.year}}</p>
+{% endfor %}
+
+<h2>Publisher Data</h2>
+{% for publisher in publishers %}
+<p> Name: {{publisher}} </p>
+{% endfor %}
+
+<h2>Publisher Object Data</h2>
+{% for publisher in collection_of_publishers %}
+<p> Name: {{publisher.name}} {% for game in publisher.games %} {{game.name}}</p>
+{% endfor %}
+{% endfor %}
+<h3>Publishers and their Platforms</h3>
+{% for publisher in collection_of_publishers %}
+<p> Name: {{publisher.name}}: {% for platform in publisher.platforms %} {{platform.name}}</p>
+{% endfor %}
+{% endfor %}
+
+<h1>Simple Line Chart</h1>
+<!-- bar chart canvas element -->
+<canvas id="myChart" width="600" height="400"></canvas>
+<p id="caption">The chart is displaying a simple line chart.</p>
+<script>
+      // Global parameters:
+      // do not resize the chart canvas when its container does (keep at 600x400px)
+      Chart.defaults.global.responsive = false;
+
+      // define the chart data
+      var chartData = {
+        labels : [{% for platform in collection_of_platforms %}
+                   "{{platform.name}}",
+                  {% endfor %}],
+        datasets : [{
+            label: '{{ legend }}',
+            fill: true,
+            lineTension: 0.1,
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: "rgba(75,192,192,1)",
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data : [{% for platform in collection_of_platforms %}
+                      {{platform.sales}},
+                    {% endfor %}],
+            spanGaps: false
+        }]
+      }
+
+      // get chart canvas
+      var ctx = document.getElementById("myChart").getContext("2d");
+
+      // create the chart using the chart canvas
+      var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: chartData,
+      });
+    </script>
+
+
+{% endblock %}
