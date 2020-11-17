@@ -1,51 +1,20 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1 style="text-align: center">{% block title %} Video Game Data {% endblock %}</h1>
+<h1 style="text-align: center">{% block title %} Platform Sales Trends {% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-{% for game in results %}
-<p> Name: {{game.name}} Year: {{game.year}} Global Sales: {{game.globalSales}} Platform: {{game.platform}} </p>
-{% endfor %}
 
-{% for game in platforms %}
-<p> Name: {{game}}</p>
-{% endfor %}
-
-{% for platform in collection_of_platforms %}
-<p> Name: {{platform.name}} {{platform.totalSales}}</p>
-{% endfor %}
-
-<h2>Null Year Data</h2>
-{% for game in null_year %}
-<p> Name: {{game.name}} {{game.platform}} Year: {{game.year}}</p>
-{% endfor %}
-
-<h2>Publisher Data</h2>
-{% for publisher in publishers %}
-<p> Name: {{publisher}} </p>
-{% endfor %}
-
-<h2>Publisher Object Data</h2>
-{% for publisher in collection_of_publishers %}
-<p> Name: {{publisher.name}} {% for game in publisher.games %} {{game.name}}</p>
-{% endfor %}
-{% endfor %}
-<h3>Publishers and their Platforms</h3>
-{% for publisher in collection_of_publishers %}
-<p> Name: {{publisher.name}}: {% for platform in publisher.platforms %} {{platform.name}}</p>
-{% endfor %}
-{% endfor %}
-
-<h1>Simple Line Chart</h1>
+<h2>Sales by Console since 2013</h2>
 <!-- bar chart canvas element -->
 <canvas id="myChart" width="600" height="400"></canvas>
-<p id="caption">The chart is displaying a simple line chart.</p>
+<p id="caption">Sales by Console since 2013</p>
 <script>
       // Global parameters:
       // do not resize the chart canvas when its container does (keep at 600x400px)
       Chart.defaults.global.responsive = false;
+      Chart.defaults.global.legend = false;
 
       // define the chart data
       var chartData = {
@@ -53,12 +22,12 @@
                    "{{platform.name}}",
                   {% endfor %}],
         datasets : [{
-            label: '{{ legend }}',
+            legend: false,
             fill: true,
             lineTension: 0.1,
-            backgroundColor: "rgba(75,192,192,0.4)",
+            backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"],
             borderColor: "rgba(75,192,192,1)",
-            borderCapStyle: 'butt',
+            borderCapStyle: 'round',
             borderDash: [],
             borderDashOffset: 0.0,
             borderJoinStyle: 'miter',

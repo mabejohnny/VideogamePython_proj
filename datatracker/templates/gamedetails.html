@@ -5,16 +5,28 @@
 {% endblock %}
 
 {% block content %}
-<h3>{{game_title}}</h3>
-{% for game in game_list %}
-<h4>{{game.platform}}</h4>
-<p> Year Release: {{game.year}} Global Sales: {{game.globalSales}} Genre: {{game.genre}}  </p>
-{% endfor %}
+<div class="card-deck">
+    {% for game in game_list %}
+  <div class="card text-center">
+    <div class="card-body">
+      <h5 class="card-title-centered">{{game.platform}}</h5>
+      <p class="card-text-centered">Global Sales: {{game.globalSales}}million</p>
+        <p class="card-text-centered">North American Sales: {{game.naSales}}million</p>
+        <p class="card-text-centered">Genre: {{game.genre}}</p>
+        <p class="card-text-centered">Publisher: {{game.publisher}}</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Released: {{game.year}}</small>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 
-<h1>Sales by Platform</h1>
+<h2 style="text-align: center">Game Sales by Platform</h2>
 <!-- bar chart canvas element -->
+<div align="center">
 <canvas id="myChart" width="600" height="400"></canvas>
-<p id="caption">The chart is displaying a simple line chart.</p>
+<p id="caption"></p>
 <script>
       // Global parameters:
       // do not resize the chart canvas when its container does (keep at 600x400px)
@@ -60,6 +72,7 @@
         data: chartData,
       });
     </script>
+    </div>
 
 
 {% endblock %}

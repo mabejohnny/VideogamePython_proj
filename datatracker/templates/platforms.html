@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1 style="text-align: center">{% block title %} Search Results {% endblock %}</h1>
+<h1 style="text-align: center">{% block title %} Console Prominence {% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 
-<h1>Sales Trends of Platforms over Time</h1>
+<h2 style="text-align: center">Sales Trends of Platforms over Time</h2>
 <!-- bar chart canvas element -->
+<div align="center">
 <canvas id="myChart" width="600" height="400"></canvas>
-<p id="caption">The chart is displaying a simple line chart.</p>
+<p id="caption">Combined Total Sales by Console in 5 year increments</p>
 <script>
 function getRandomColor() {
             var letters = '0123456789ABCDEF'.split('');
@@ -60,6 +61,7 @@ function getRandomColor() {
         data: chartData,
       });
     </script>
+    </div>
 
 
 {% endblock %}

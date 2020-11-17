@@ -83,7 +83,7 @@ def index():
 
     return render_template('index.html', games=games, search_results=search_results)
 
-@bp.route('/home', methods=['GET'])
+@bp.route('/platforms', methods=['GET'])
 def platform():
     response = requests.get('https://api.dccresource.com/api/games')
     games = json.loads(response.content, object_hook=Game.game_decoder)
@@ -160,16 +160,8 @@ def sales():
         else:
             recent_platforms.append(game.platform)
 
-    #Creates a list of all platforms
-    for game in games:
-        if game.platform in platforms:
-            continue
-        else:
-            platforms.append(game.platform)
-
-
     #Creates a Collection of Platform Objects
-    for system in platforms:
+    for system in recent_platforms:
         new_system = Platform.platform_decoder(system)
         collection_of_platforms.append(new_system)
 
@@ -179,42 +171,12 @@ def sales():
             if game.platform == platform.name:
                 platform.totalSales += game.globalSales
 
-    #Creates a list of games without a release year
-    for game in games:
-        if game.year is None:
-            null_year.append(game)
-
-    #Create a list of Unique Publishers
-    for game in games:
-        if game.publisher in publishers:
-            continue
-        else:
-            publishers.append(game.publisher)
-
-    #Creates a collection of Publisher Objects
-    for publisher in publishers:
-        publisher = Publisher.publisher_decoder(publisher)
-        collection_of_publishers.append(publisher)
-
-    #Populates the games list for each publisher in collection_of_publishers
-    for publisher in collection_of_publishers:
-        for game in games:
-            if game.publisher == publisher.name:
-                publisher.games.append(game)
-
-    for publisher in collection_of_publishers:
-        for game in publisher.games:
-            for platform in publisher.platforms:
-                if game.platform == platform.name:
-                    continue
-                else:
-                    publisher.platforms.append(Platform.platform_decoder(game.platform))
-
-    legend = 'Monthly Data'
+    legend = ['PS3', 'X360', 'PS4', '3DS', 'xOne', 'WiiU', 'Wii', 'PC', 'PSV', 'DS', 'PSP']
     labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
     values = [10, 9, 8, 7, 6, 4, 7, 8]
+    colors = ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
 
-    return render_template('sales.html', legend=legend, labels=labels, values=values, games=games, results=recent_games, platforms=platforms, collection_of_platforms=collection_of_platforms, null_year=null_year, publishers=publishers, collection_of_publishers=collection_of_publishers)
+    return render_template('sales.html', legend=legend, labels=labels, values=values, collection_of_platforms=collection_of_platforms, colors=colors)
 
 @bp.route('/publishers', methods=['GET'])
 def publishers():
