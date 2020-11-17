@@ -62,6 +62,7 @@ def index():
     games = json.loads(response.content, object_hook=lambda d: SimpleNamespace(**d))
     unique_games = []
     search_results = []
+    count = len(games)
 
     if request.method == 'POST':
         page_title = request.form['title']
@@ -78,10 +79,10 @@ def index():
             if request.form['title'] in game:
                 search_results.append(game)
 
-        return render_template('searchresults.html', games=games, search_results=search_results, unique_games=unique_games)
+        return render_template('searchresults.html', games=games, search_results=search_results, unique_games=unique_games, count=count)
 
 
-    return render_template('index.html', games=games, search_results=search_results)
+    return render_template('index.html', games=games, search_results=search_results, count=count)
 
 @bp.route('/platforms', methods=['GET'])
 def platform():
@@ -216,6 +217,11 @@ def publishers():
                 if game.platform == platform.name and game.publisher == publisher.name:
                     platform.totalSales += game.globalSales
 
+    for publisher in collection_of_publishers:
+        for platform in publisher.platforms:
+            if platform.totalSales == 0:
+                publisher.platforms.remove(platform)
+
     return render_template('publishers.html', collection_of_publishers=collection_of_publishers)
 
 @bp.route('/bonus', methods=['GET'])
@@ -251,11 +257,16 @@ def bonus():
                 platform.games.append(game)
 
     for platform in collection_of_platforms:
-        for publisher in publishers:
-            for game in platform.games:
-                if game.publisher == publisher:
-                    new = Publisher.publisher_decoder(game.publisher)
-                    platform.publishers.append(new)
+        gp = []
+        for game in platform.games:
+            if game.publisher in gp:
+                 continue
+            else:
+                gp.append(game.publisher)
+        for publisher in gp:
+            new = Publisher.publisher_decoder(publisher)
+            platform.publishers.append(new)
+
 
     for platform in collection_of_platforms:
         for game in platform.games:

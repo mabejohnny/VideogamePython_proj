@@ -1,17 +1,69 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1 style="text-align: center">{% block title %} Publisher Data {% endblock %}</h1>
+<h1 style="text-align: center">{% block title %} Publisher Success by Platform {% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 
-<h3>Publishers and their Platforms</h3>
 {% for platform in collection_of_platforms %}
-<p> Platform: {{platform.name}}:</p>
-{% for publisher in platform.publishers %}
-<p> Publisher: {{publisher.name}} Sales: {{publisher.sales}}</p>
-{% endfor %}
-{% endfor %}
+<div align="center" background-color="white">
+<canvas id="{{platform.name}}" width="600" height="400"></canvas>
+<p id="caption"></p>
+<script>
+function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++ ) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+                }
 
+      // Global parameters:
+      // do not resize the chart canvas when its container does (keep at 600x400px)
+      Chart.defaults.global.responsive = false;
+
+      // define the chart data
+      var chartData = {
+        labels : [{% for publisher in platform.publishers %}
+                   "{{publisher.name}}",
+                  {% endfor %}],
+        datasets : [{
+            label: '{{ platform.name }}',
+            fill: true,
+            lineTension: 0.1,
+            backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"],
+            borderColor: "rgba(75,192,192,1)",
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data : [{% for publisher in platform.publishers %}
+                      {{publisher.sales}},
+                    {% endfor %}],
+            spanGaps: true
+        }]
+      }
+
+      // get chart canvas
+      var ctx = document.getElementById("{{platform.name}}").getContext("2d");
+
+      // create the chart using the chart canvas
+      var {{platform.name}} = new Chart(ctx, {
+        type: 'bar',
+        data: chartData,
+      });
+    </script>
+    </div>
+{% endfor %}
 {% endblock %}
