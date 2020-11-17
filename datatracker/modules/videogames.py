@@ -42,14 +42,19 @@ def gamedetails():
 @bp.route('/games', methods=('GET', 'POST'))
 def games():
     response = requests.get('https://api.dccresource.com/api/games')
-    allgames = json.loads(response.content, object_hook=lambda d: SimpleNamespace(**d))
+    allgames = json.loads(response.content, object_hook=Game.game_decoder)
     unique_games = []
+
+    def getKey(game):
+        return game.rank
+
+    sorted_games = sorted(allgames, key=getKey)
 
     for game in allgames:
         if game.name not in unique_games:
-            unique_games.append(game.name)
+            unique_games.append(game)
 
-    return render_template('games.html', allgames=allgames, unique_games=unique_games)
+    return render_template('games.html', allgames=allgames, unique_games=sorted_games)
 
 @bp.route('/', methods=('GET', 'POST'))
 def index():
@@ -172,7 +177,7 @@ def sales():
     for platform in collection_of_platforms:
         for game in recent_games:
             if game.platform == platform.name:
-                platform.sales += game.globalSales
+                platform.totalSales += game.globalSales
 
     #Creates a list of games without a release year
     for game in games:

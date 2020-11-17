@@ -5,9 +5,13 @@
 {% endblock %}
 
 {% block content %}
-
+<table class="table table-striped">
+    <tr class="table-info">
+        <th>Game Name: </th><th>Info</th>
+    </tr>
 {% for game in search_results %}
-<p> Name: {{game}}  <form method="post" action="gamedetails"><input type="submit" name="details_button" type="details_button" value="{{game}}"></form></p>
-{% endfor %}
+<tr><td> {{game}} </td> <td> <form method="post" action="gamedetails"><button class="btn btn-primary" type="submit" name="details_button" value="{{game}}">Game Details</button></form></td></tr>
+    {% endfor %}
+</table>
 
 {% endblock %}
