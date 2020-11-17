@@ -6,8 +6,9 @@
 
 {% block content %}
 
-<h2>Sales by Console since 2013</h2>
+<h2 style="text-align: center">Sales by Console since 2013</h2>
 <!-- bar chart canvas element -->
+<div align="center">
 <canvas id="myChart" width="600" height="400"></canvas>
 <p id="caption">Sales by Console since 2013</p>
 <script>
@@ -56,6 +57,7 @@
         data: chartData,
       });
     </script>
+    </div>
 
 
 {% endblock %}
